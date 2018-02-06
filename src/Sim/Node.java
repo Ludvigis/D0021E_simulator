@@ -8,7 +8,15 @@ public class Node extends SimEnt {
 	private SimEnt _peer;
 	private int _sentmsg=0;
 	private int _seq = 0;
-
+	private Generator generator;
+	
+	//Overloaded constructor with generator argument.
+	public Node (int network, int node, Generator generator)
+	{
+		super();
+		_id = new NetworkAddr(network, node);
+		this.generator = generator;
+	}
 	
 	public Node (int network, int node)
 	{
