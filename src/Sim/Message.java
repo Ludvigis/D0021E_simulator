@@ -9,12 +9,12 @@ public class Message implements Event{
 	private NetworkAddr _destination;
 	private int _seq=0;
 	
-	
 	Message (NetworkAddr from, NetworkAddr to, int seq)
 	{
 		_source = from;
 		_destination = to;
 		_seq=seq;
+		
 	}
 	
 	public NetworkAddr source()
@@ -34,9 +34,8 @@ public class Message implements Event{
 
 	public void entering(SimEnt locale)
 	{
-	
 	}
 	
-
+	
 }
 	

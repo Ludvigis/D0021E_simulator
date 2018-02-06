@@ -6,7 +6,7 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates two links
- 		LossyLink link1 = new LossyLink(0,0,0.1);
+ 		LossyLink link1 = new LossyLink(10,0,0.1);
 		Link link2 = new Link();
 		
 		// Create two end hosts that will be
@@ -31,7 +31,7 @@ public class Run {
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
 		host1.StartSending(2, 2, 1000, 5, 1); 
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
-		//host2.StartSending(1, 1, 2, 10, 10); 
+		host2.StartSending(1, 1, 0, 10, 10); 
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
@@ -45,7 +45,8 @@ public class Run {
 		{
 			System.out.println("The motor seems to have a problem, time for service?");
 		}		
-
+		
+		System.out.println("Packet loss: "+ LossyLink.packetloss);
 
 
 	}
