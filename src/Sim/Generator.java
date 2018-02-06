@@ -1,6 +1,7 @@
 package Sim;
 
-public class Generator {
-
+public interface Generator {
+	
+	public double getNextSendDistribbution();
 
 }
