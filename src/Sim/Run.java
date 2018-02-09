@@ -11,8 +11,8 @@ public class Run {
 		
 		// Create two end hosts that will be
 		// communicating via the router
-		Node host1 = new Node(1,1);
-		Node host2 = new Node(2,1);
+		Node host1 = new Node(1,1, new Normal(100, 10));
+		Node host2 = new Node(2,1, new Normal(50,5));
 
 		//Connect links to hosts
 		host1.setPeer(link1);
