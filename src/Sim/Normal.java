@@ -19,7 +19,7 @@ public class Normal implements Generator {
 		// Gives next normal distributed value with mean 0.0 and standard deviate 1.0.
 		double dist = rnd.nextGaussian();
 		// Returns normal distributed value around mean with the deviate specified.  
-		dist *= std_deviate + mean;
+		dist =  dist * std_deviate + mean;
 		// No negative numbers allowed using loop to NOT build stack frames.
 		while(dist < 0){
 			dist = getNextSend();

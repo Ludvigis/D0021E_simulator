@@ -4,18 +4,18 @@ import java.util.Random;
 
 public class Poisson implements Generator{
 	private Random rnd;
-	private double mean;
+	private double avg;
 	
-	public Poisson(double mean) {
+	public Poisson(double avg) {
 		rnd = new Random();
-		this.mean = mean;
+		this.avg = avg;
 	}
 	
 	public double getNextSend() {		//using algorithm described by Knuth to generate
 										//random numbers with a poisson distribution
-		double l = Math.exp(-mean);
-		double k = 0;
-		double p = 1;
+		double l = Math.exp(-avg);
+		int k = 0;
+		double p = 1.0;
 					
 		while(p>l) {
 			k = k+1;
@@ -24,5 +24,7 @@ public class Poisson implements Generator{
 		}
 		return k-1;
 	}
+	
+	
 	
 }

@@ -2,14 +2,16 @@ package Sim;
 
 public class CBR implements Generator{
 
-	double rate;
+	double bitrate;
+	public CBR(double bitrate) {
+		this.bitrate = bitrate;
+	}
 	
-	public CBR(double rate){
-		this.rate = rate;
-	}
+	
 	public double getNextSend() {
-		
-		return rate;
+		return this.bitrate;
 	}
+	
+
 
 }
