@@ -9,6 +9,7 @@ public class Node extends SimEnt {
 	private int _sentmsg=0;
 	private int _seq = 0;
 	private Generator generator;
+	private Sink sink;
 	
 	//Overloaded constructor with generator argument.
 	public Node (int network, int node, Generator generator)
@@ -16,14 +17,9 @@ public class Node extends SimEnt {
 		super();
 		_id = new NetworkAddr(network, node);
 		this.generator = generator;
+		this.sink = new Sink();
 	}
-	
-	public Node (int network, int node)
-	{
-		super();
-		_id = new NetworkAddr(network, node);
-	}	
-	
+
 	
 	// Sets the peer to communicate with. This node is single homed
 	
@@ -48,14 +44,12 @@ public class Node extends SimEnt {
 	// In one of the labs you will create some traffic generators
 	
 	private int _stopSendingAfter = 0; //messages
-	private int _timeBetweenSending = 10; //time between messages
 	private int _toNetwork = 0;
 	private int _toHost = 0;
 	
-	public void StartSending(int network, int node, int number, int timeInterval, int startSeq)
+	public void StartSending(int network, int node, int number, int startSeq)
 	{
 		_stopSendingAfter = number;
-		_timeBetweenSending = timeInterval;
 		_toNetwork = network;
 		_toHost = node;
 		_seq = startSeq;
@@ -82,7 +76,7 @@ public class Node extends SimEnt {
 		if (ev instanceof Message)
 		{
 			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" receives message with seq: "+((Message) ev).seq() + " at time "+SimEngine.getTime());
-			
+			sink.recvMessage((Message)ev);
 		}
 	}
 }
