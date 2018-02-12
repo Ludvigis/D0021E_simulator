@@ -21,6 +21,14 @@ public class Node extends SimEnt {
 	}
 
 	
+	public Node (int network, int node,int rate)
+	{
+		super();
+		this.generator = new CBR(rate);
+		_id = new NetworkAddr(network, node);
+	}	
+
+	
 	// Sets the peer to communicate with. This node is single homed
 	
 	public void setPeer (SimEnt peer)

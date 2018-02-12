@@ -6,13 +6,13 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates two links
- 		LossyLink link1 = new LossyLink(10,0,0.1);
+ 		Link link1 = new Link();
 		Link link2 = new Link();
 		
 		// Create two end hosts that will be
 		// communicating via the router
-		Node host1 = new Node(1,1, new Normal(100, 10));
-		Node host2 = new Node(2,1, new Normal(50,5));
+		Node host1 = new Node(1,1, new Normal(50,10));
+		Node host2 = new Node(2,1, new Normal(10,2));
 
 		//Connect links to hosts
 		host1.setPeer(link1);
@@ -32,6 +32,7 @@ public class Run {
 		host1.StartSending(2, 2, 1000, 1); 
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
 		host2.StartSending(1, 1, 0, 10); 
+
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
