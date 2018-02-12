@@ -11,7 +11,8 @@ public class Run {
 		
 		// Create two end hosts that will be
 		// communicating via the router
-		Node host1 = new Node(1,1, new Normal(10,2));
+
+		Node host1 = new Node(1,1, new Normal(50,10));
 		Node host2 = new Node(2,1, new Normal(10,2));
 
 		//Connect links to hosts
@@ -29,9 +30,10 @@ public class Run {
 		
 		// Generate some traffic
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
-		host1.StartSending(2, 2, 10, 5, 1); 
+		host1.StartSending(2, 2, 1000, 1); 
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
-		host2.StartSending(1, 1, 10, 10, 10); 
+		host2.StartSending(1, 1, 0, 10); 
+
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
