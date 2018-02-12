@@ -16,7 +16,7 @@ public class Message implements Event{
 		_source = from;
 		_destination = to;
 		_seq=seq;
-		_timeSent = SimEngine.instance().getTime();
+		_timeSent = SimEngine.getTime();
 		
 	}
 	

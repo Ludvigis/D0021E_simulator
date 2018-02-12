@@ -87,4 +87,8 @@ public class Node extends SimEnt {
 			sink.recvMessage((Message)ev);
 		}
 	}
+	
+	public void printStatistics() {
+		sink.printStatistics();
+	}
 }
