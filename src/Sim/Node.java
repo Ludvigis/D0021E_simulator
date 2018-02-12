@@ -90,5 +90,6 @@ public class Node extends SimEnt {
 	
 	public void printStatistics() {
 		sink.printStatistics();
+		//print sendStatistics...
 	}
 }
