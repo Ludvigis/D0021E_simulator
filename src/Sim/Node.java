@@ -18,9 +18,10 @@ public class Node extends SimEnt {
 		this.generator = generator;
 	}
 	
-	public Node (int network, int node)
+	public Node (int network, int node,int rate)
 	{
 		super();
+		this.generator = new CBR(rate);
 		_id = new NetworkAddr(network, node);
 	}	
 	

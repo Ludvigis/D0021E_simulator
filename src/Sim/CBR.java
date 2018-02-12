@@ -2,9 +2,14 @@ package Sim;
 
 public class CBR implements Generator{
 
+	double rate;
+	
+	public CBR(double rate){
+		this.rate = rate;
+	}
 	public double getNextSend() {
-		// TODO Auto-generated method stub
-		return 1.0d;
+		
+		return rate;
 	}
 
 }
