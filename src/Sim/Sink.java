@@ -2,7 +2,8 @@ package Sim;
 
 public class Sink {
 	
-	private double estimatedJitter;
+	private double jitter;
+	private double transit;
 	private double totalDelay;
 	private double avgDelay;
 	private Double maxDelay = Double.NaN;
@@ -13,8 +14,12 @@ public class Sink {
 	public void recvMessage(Message msg){
 		double sentTime = msg.getTimeSent();
 		double currentTime = SimEngine.getTime();
-		//TODO Estimated jitter ...
 		double delay = currentTime - sentTime;
+		
+		double delta = delay - this.transit;
+		this.transit = delay;
+		delta = Math.abs(delta);
+		this.jitter += (1.0d/16.0d)* (delta - this.jitter);		// Update estimated jitter continuously 
 		
 		++numberOfMsg;
 		totalDelay += delay;
@@ -30,5 +35,6 @@ public class Sink {
 		System.out.println("Average Delay: " + avgDelay);
 		System.out.println("Max Delay: " + maxDelay);
 		System.out.println("Min Delay: " + minDelay);
+		System.out.println("Estimated Jitter node to node: " + jitter);
 	}
 }
