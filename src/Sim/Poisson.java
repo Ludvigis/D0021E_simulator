@@ -24,6 +24,10 @@ public class Poisson implements Generator{
 		}
 		return k-1;
 	}
+
+	public String getGeneratorName() {
+		return "Poisson Traffic generator";
+	}
 	
 	
 	

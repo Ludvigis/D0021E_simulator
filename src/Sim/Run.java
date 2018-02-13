@@ -6,7 +6,7 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates two links
- 		LossyLink link1 = new LossyLink(100,0,0);
+ 		LossyLink link1 = new LossyLink(200,0,0);
 		Link link2 = new Link();
 		
 		// Create two end hosts that will be
@@ -32,7 +32,7 @@ public class Run {
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
 		host1.StartSending(2, 2, 1000, 1); 
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
-		host2.StartSending(1, 1, 0, 10); 
+		host2.StartSending(1, 1, 100, 10); 
 
 		
 		// Start the simulation engine and of we go!

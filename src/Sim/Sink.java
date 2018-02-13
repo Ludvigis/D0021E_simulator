@@ -32,9 +32,9 @@ public class Sink {
 	}
 	
 	public void printStatistics() {
-		System.out.println("Average Delay: " + avgDelay);
-		System.out.println("Max Delay: " + maxDelay);
-		System.out.println("Min Delay: " + minDelay);
+		System.out.println("Average Delay on package received: " + avgDelay);
+		System.out.println("Max Delay on package received: " + maxDelay);
+		System.out.println("Min Delay on package received: " + minDelay);
 		System.out.println("Estimated Jitter node to node: " + jitter);
 	}
 }

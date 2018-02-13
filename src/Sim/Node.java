@@ -10,6 +10,10 @@ public class Node extends SimEnt {
 	private int _seq = 0;
 	private Generator generator;
 	private Sink sink;
+	private Double avgDelay = Double.NaN;
+	private Double maxDelay = Double.NaN;
+	private Double minDelay = Double.NaN;
+	private double totalDelay;
 	
 	//Overloaded constructor with generator argument.
 	public Node (int network, int node, Generator generator)
@@ -74,11 +78,17 @@ public class Node extends SimEnt {
 		{			
 			if (_stopSendingAfter > _sentmsg)
 			{
+				double nextSend = generator.getNextSend();
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
-				send(this, new TimerEvent(),generator.getNextSend());
+				send(this, new TimerEvent(),nextSend);
 				System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" sent message with seq: "+_seq + " at time "+SimEngine.getTime());
 				_seq++;
+
+				totalDelay += nextSend;
+				maxDelay = (nextSend > maxDelay || maxDelay.isNaN())? nextSend:maxDelay;
+				minDelay = (nextSend < minDelay || minDelay.isNaN())? nextSend:minDelay;
+				avgDelay = totalDelay / _sentmsg;
 			}
 		}
 		if (ev instanceof Message)
@@ -89,8 +99,16 @@ public class Node extends SimEnt {
 	}
 	
 	public void printStatistics() {
-		System.out.println("Node " + _id.networkId() + "." + _id.nodeId());
+		System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " using " + generator.getGeneratorName() + "\n");
 		sink.printStatistics();
-		//print sendStatistics...
+		printSendStatistics();
+		System.out.println();
+	}
+	
+	public void printSendStatistics() {
+		System.out.println("Average time between sending: " + avgDelay);
+		System.out.println("Max time between sending: " + maxDelay);
+		System.out.println("Min time between sending: " + minDelay);
+
 	}
 }

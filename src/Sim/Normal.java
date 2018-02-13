@@ -27,4 +27,8 @@ public class Normal implements Generator {
 		return dist;
 	}
 
+	public String getGeneratorName() {
+		return "Normal/Gaussian traffic generator";
+	}
+
 }

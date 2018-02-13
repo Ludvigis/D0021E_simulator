@@ -11,6 +11,11 @@ public class CBR implements Generator{
 	public double getNextSend() {
 		return this.bitrate;
 	}
+
+
+	public String getGeneratorName() {
+		return "Constant bit rate traffic generator";
+	}
 	
 
 
