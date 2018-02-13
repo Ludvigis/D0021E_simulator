@@ -51,6 +51,7 @@ public class Run {
 		System.out.println("Packet loss: "+ LossyLink.packetloss);
 		
 		System.out.println("******************************");
+		host1.printStatistics();
 		host2.printStatistics();
 
 

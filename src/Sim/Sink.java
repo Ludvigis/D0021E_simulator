@@ -5,8 +5,8 @@ public class Sink {
 	private double estimatedJitter;
 	private double totalDelay;
 	private double avgDelay;
-	private double maxDelay = Double.MIN_VALUE;
-	private double minDelay = Double.MAX_VALUE;
+	private Double maxDelay = Double.NaN;
+	private Double minDelay = Double.NaN;
 	private int numberOfMsg = 0;
 	
 	
@@ -20,9 +20,9 @@ public class Sink {
 		totalDelay += delay;
 		avgDelay = totalDelay / (double)numberOfMsg;
 		
-		if(delay > maxDelay)
+		if(delay > maxDelay || maxDelay.isNaN());
 			maxDelay = delay;
-		if(delay < minDelay)
+		if(delay < minDelay || minDelay.isNaN())
 			minDelay = delay;
 	}
 	

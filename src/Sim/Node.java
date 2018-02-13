@@ -89,6 +89,7 @@ public class Node extends SimEnt {
 	}
 	
 	public void printStatistics() {
+		System.out.println("Node " + _id.networkId() + "." + _id.nodeId());
 		sink.printStatistics();
 		//print sendStatistics...
 	}
