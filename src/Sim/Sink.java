@@ -20,7 +20,7 @@ public class Sink {
 		totalDelay += delay;
 		avgDelay = totalDelay / (double)numberOfMsg;
 		
-		if(delay > maxDelay)
+		if( Object.class.equals(null)||delay > maxDelay)
 			maxDelay = delay;
 		if(delay < minDelay)
 			minDelay = delay;
