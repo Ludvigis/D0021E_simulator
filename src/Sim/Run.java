@@ -7,14 +7,14 @@ public class Run {
 	{
  		//Creates two links
 
- 		LossyLink link1 = new LossyLink(100,0,0);
+ 		Link link1 = new Link();
 		Link link2 = new Link();
 
 		
 		// Create two end hosts that will be
 		// communicating via the router
 		Node host1 = new Node(1,1, new Poisson(10));
-		Node host2 = new Node(2,1, new Normal(100,10));
+		Node host2 = new Node(2,1, new Normal(10,10));
 
 		//Connect links to hosts
 		host1.setPeer(link1);

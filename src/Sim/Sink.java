@@ -8,22 +8,35 @@ public class Sink {
 	private Double maxDelay = Double.NaN;
 	private Double minDelay = Double.NaN;
 	private int numberOfMsg;
-	private double delta;
-	private double lastPacketTime;
+	private double transitTime;
+	private Double lastPacketTransitTime = Double.NaN;
+	private Double lastPacketResvTime;
 	private double jitterSum;
 	private double delay;
+	private double delta;
+	private double sendDelay;
 	
 	public void recvMessage(Message msg){
 		
-		//Calculate average jitter for packets sent.
+		//Calculate average jitter for packets sent could add max and min jitter...
 		double currentTime = SimEngine.getTime();
-		double tempDelta = currentTime - lastPacketTime;
-		lastPacketTime = currentTime;
-		jitterSum += Math.abs(delta - tempDelta) ;
-		delta = tempDelta;
+		if(lastPacketTransitTime.isNaN()){
+			lastPacketTransitTime = currentTime;
+			lastPacketResvTime = currentTime;
+		}else{
+			transitTime = Math.abs(lastPacketResvTime - currentTime);
+			lastPacketResvTime = currentTime;
+			delta = Math.abs(lastPacketTransitTime - transitTime); 
+			jitterSum += delta;
+			lastPacketTransitTime = transitTime;
+			
+			
+		}
+		
+		
 		
 		// Delay in transit time.
-		delay = currentTime - msg.getTimeSent();
+		sendDelay = currentTime - msg.getTimeSent();
 		//increment number of messages/packets received.
 		++numberOfMsg;
 		//Add delay to total delay
