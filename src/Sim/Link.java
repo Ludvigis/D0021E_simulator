@@ -43,6 +43,18 @@ public class Link extends SimEnt{
 			{
 				send(_connectorA, ev, _now);
 			}
+		}else {
+			if (src == _connectorA)
+			{
+				send(_connectorB, ev, _now);
+			}
+			else
+			{
+				send(_connectorA, ev, _now);
+			}
 		}
+		
+
+	
 	}	
 }

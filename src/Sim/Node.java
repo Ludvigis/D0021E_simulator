@@ -70,14 +70,21 @@ public class Node extends SimEnt {
 	
 //**********************************************************************************	
 	
-	// This method is called upon that an event destined for this node triggers.
+	public void changeRouterInterface(int newInterface) {
+		send(_peer, new InterfaceChange(this,newInterface,(Link)_peer),0);
+	}
 	
+	
+	// This method is called upon that an event destined for this node triggers.
+	int test=0; 
 	public void recv(SimEnt src, Event ev)
 	{
 		if (ev instanceof TimerEvent)
 		{			
 			if (_stopSendingAfter > _sentmsg)
 			{
+				
+				
 				double nextSend = generator.getNextSend();
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
@@ -93,8 +100,18 @@ public class Node extends SimEnt {
 		}
 		if (ev instanceof Message)
 		{
+			//used to change interface between messages
+			test++;
+			if(test == 10) {
+				changeRouterInterface(5);
+			}
+			
 			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" receives message with seq: "+((Message) ev).seq() + " at time "+SimEngine.getTime());
 			sink.recvMessage((Message)ev);
+		}
+		if (ev instanceof InterfaceHasChangedMsg) {
+			InterfaceHasChangedMsg msg = (InterfaceHasChangedMsg)ev;
+			System.out.println("Node received interface change msg "+"old interface: " + msg.oldInterface + " new interface: " + msg.newInterface);
 		}
 	}
 	

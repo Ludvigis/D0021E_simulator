@@ -16,6 +16,12 @@ public class Router extends SimEnt{
 		_interfaces=interfaces;
 	}
 	
+	public void printRouterTable() {
+		for(int i = 0; i <_routingTable.length; i++) {
+			System.out.println(i + " " +_routingTable[i]);
+		}
+	}
+	
 	// This method connects links to the router and also informs the 
 	// router of the host connects to the other end of the link
 	
@@ -31,13 +37,17 @@ public class Router extends SimEnt{
 		((Link) link).setConnector(this);
 	}
 	
-	public void disconnectInterface(int networkaddress){
+	public int disconnectInterface(int networkaddress){
 		Link routerInterfaceLink = (Link) getInterface(networkaddress);
-		
+		int oldInterface = 0;
 		for(int i = 0 ; i < _interfaces; i++){
-			if(_routingTable[i].link() ==  routerInterfaceLink){ _routingTable[i] = null;}
+			if(_routingTable[i] !=  null) {
+				if(_routingTable[i].link() ==  routerInterfaceLink){ _routingTable[i] = null; oldInterface = i;}
+			}
 		}
+		
 		routerInterfaceLink.removeConnector(this);
+		return oldInterface;
 	}
 
 	// This method searches for an entry in the routing table that matches
@@ -70,6 +80,18 @@ public class Router extends SimEnt{
 			System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId());		
 			send (sendNext, event, _now);
 	
-		}	
+		}
+		if (event instanceof InterfaceChange) {
+			
+			this.printRouterTable();
+			InterfaceChange msg = (InterfaceChange)event;
+			int oldInterface = disconnectInterface(msg.getNetworkId());
+			connectInterface(msg.getNewInterface(),msg.getLink(),msg.getNode());
+			
+			System.out.println("Changed interface");
+			this.printRouterTable();
+			//send location changed to peer
+			send(msg.getLink(),new InterfaceHasChangedMsg(oldInterface, msg.getNewInterface(), msg.getNode()),_now);
+		}
 	}
 }
