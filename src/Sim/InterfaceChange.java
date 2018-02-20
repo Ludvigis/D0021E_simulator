@@ -3,7 +3,7 @@ package Sim;
 public class InterfaceChange implements Event{
 	
 	private Node node;
-	private int newInterface;
+	int newInterface;
 	private Link link;
 	
 	public InterfaceChange(Node node, int newInterface, Link link){

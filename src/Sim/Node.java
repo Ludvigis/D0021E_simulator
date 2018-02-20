@@ -14,6 +14,8 @@ public class Node extends SimEnt {
 	private Double maxDelay = Double.NaN;
 	private Double minDelay = Double.NaN;
 	private double totalDelay;
+	private int interfaceChangeNumMsg;
+	private int newInterface;
 	
 	//Overloaded constructor with generator argument.
 	public Node (int network, int node, Generator generator)
@@ -76,15 +78,15 @@ public class Node extends SimEnt {
 	
 	
 	// This method is called upon that an event destined for this node triggers.
-	int test=0; 
+	int numReceivedMsg;
+	
 	public void recv(SimEnt src, Event ev)
 	{
 		if (ev instanceof TimerEvent)
 		{			
 			if (_stopSendingAfter > _sentmsg)
 			{
-				
-				
+
 				double nextSend = generator.getNextSend();
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
@@ -100,19 +102,25 @@ public class Node extends SimEnt {
 		}
 		if (ev instanceof Message)
 		{
-			//used to change interface between messages
-			test++;
-			if(test == 10) {
-				changeRouterInterface(5);
+			numReceivedMsg++;
+			if(numReceivedMsg==interfaceChangeNumMsg) {
+				changeRouterInterface(this.newInterface);
 			}
 			
 			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" receives message with seq: "+((Message) ev).seq() + " at time "+SimEngine.getTime());
 			sink.recvMessage((Message)ev);
 		}
-		if (ev instanceof InterfaceHasChangedMsg) {
-			InterfaceHasChangedMsg msg = (InterfaceHasChangedMsg)ev;
-			System.out.println("Node received interface change msg "+"old interface: " + msg.oldInterface + " new interface: " + msg.newInterface);
+		//Received interface change...
+		if (ev instanceof InterfaceChange) {
+			InterfaceChange msg = (InterfaceChange)ev;
+		
+			System.out.println("Node is now on new interface: " + msg.newInterface);
 		}
+	}
+	
+	public void changeInterfaceAfterRecvMsgs(int numMessages, int newInterface) {
+		this.interfaceChangeNumMsg = numMessages;
+		this.newInterface = newInterface;
 	}
 	
 	public void printStatistics() {

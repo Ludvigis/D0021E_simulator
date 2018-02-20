@@ -18,7 +18,10 @@ public class Router extends SimEnt{
 	
 	public void printRouterTable() {
 		for(int i = 0; i <_routingTable.length; i++) {
-			System.out.println(i + " " +_routingTable[i]);
+			if(_routingTable[i]!=null) {
+				System.out.println("*** Node: " +((Node)_routingTable[i].node()).getAddr().networkId() + "." + ((Node)_routingTable[i].node()).getAddr().nodeId() + " router interface:" + i);
+			}
+			
 		}
 	}
 	
@@ -85,13 +88,13 @@ public class Router extends SimEnt{
 			
 			this.printRouterTable();
 			InterfaceChange msg = (InterfaceChange)event;
-			int oldInterface = disconnectInterface(msg.getNetworkId());
+			disconnectInterface(msg.getNetworkId());
 			connectInterface(msg.getNewInterface(),msg.getLink(),msg.getNode());
 			
 			System.out.println("Changed interface");
 			this.printRouterTable();
 			//send location changed to peer
-			send(msg.getLink(),new InterfaceHasChangedMsg(oldInterface, msg.getNewInterface(), msg.getNode()),_now);
+			send(msg.getLink(),event,_now);
 		}
 	}
 }

@@ -1,7 +1,5 @@
 package Sim;
 
-import javax.print.attribute.standard.PrinterResolution;
-
 // An example of how to build a topology and starting the simulation engine
 
 public class Run {
@@ -30,6 +28,9 @@ public class Run {
 		Router routeNode = new Router(10);
 		routeNode.connectInterface(0, link1, host1);
 		routeNode.connectInterface(1, link2, host2);
+		
+		//Change to interface 5 after 10 messages
+		host2.changeInterfaceAfterRecvMsgs(10, 5);
 		
 		// Generate some traffic
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
