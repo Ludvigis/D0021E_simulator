@@ -30,6 +30,15 @@ public class Router extends SimEnt{
 		
 		((Link) link).setConnector(this);
 	}
+	
+	public void disconnectInterface(int networkaddress){
+		Link routerInterfaceLink = (Link) getInterface(networkaddress);
+		
+		for(int i = 0 ; i < _interfaces; i++){
+			if(_routingTable[i].link() ==  routerInterfaceLink){ _routingTable[i] = null;}
+		}
+		routerInterfaceLink.removeConnector(this);
+	}
 
 	// This method searches for an entry in the routing table that matches
 	// the network number in the destination field of a messages. The link

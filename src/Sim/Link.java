@@ -22,7 +22,12 @@ public class Link extends SimEnt{
 		else
 			_connectorB=connectTo;
 	}
-
+	//removes a connection off a siment on the link.
+	
+	public void removeConnector(SimEnt entity){
+		if(_connectorA == entity){_connectorA = null;}
+		else if (_connectorB == entity){_connectorB = null;}
+	}
 	// Called when a message enters the link
 	
 	public void recv(SimEnt src, Event ev)

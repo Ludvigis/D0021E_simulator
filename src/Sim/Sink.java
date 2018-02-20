@@ -12,7 +12,6 @@ public class Sink {
 	private Double lastPacketTransitTime = Double.NaN;
 	private Double lastPacketResvTime;
 	private double jitterSum;
-	private double delay;
 	private double delta;
 	private double sendDelay;
 	
@@ -40,15 +39,15 @@ public class Sink {
 		//increment number of messages/packets received.
 		++numberOfMsg;
 		//Add delay to total delay
-		totalDelay += delay;
+		totalDelay += sendDelay;
 		//Calculate average delay
 		avgDelay = totalDelay / (double)numberOfMsg;
 		
 
-		if(delay > maxDelay || maxDelay.isNaN());
-			maxDelay = delay;
-		if(delay < minDelay || minDelay.isNaN())
-			minDelay = delay;
+		if(sendDelay > maxDelay || maxDelay.isNaN())
+			maxDelay = sendDelay;
+		if(sendDelay < minDelay || minDelay.isNaN())
+			minDelay = sendDelay;
 	}
 	
 	public void printStatistics() {
