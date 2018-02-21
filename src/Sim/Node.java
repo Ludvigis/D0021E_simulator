@@ -111,10 +111,17 @@ public class Node extends SimEnt {
 			sink.recvMessage((Message)ev);
 		}
 		//Received interface change...
-		if (ev instanceof InterfaceChange) {
-			InterfaceChange msg = (InterfaceChange)ev;
+		if (ev instanceof InterfaceChangeUpdate) {
+			InterfaceChangeUpdate msg = (InterfaceChangeUpdate)ev;
 		
-			System.out.println("Node is now on new interface: " + msg.newInterface);
+			System.out.println("Mobile Node is now on new interface: " + msg.getNewInterface());
+		}
+		
+		if (ev instanceof InterfaceChangeACK ) {
+			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" received interface change ack");
+			send(_peer, new InterfaceChangeUpdate((Link)_peer,((InterfaceChangeACK) ev).getNewInterface()),0);
+			
+			
 		}
 	}
 	

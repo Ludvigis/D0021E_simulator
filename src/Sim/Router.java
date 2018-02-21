@@ -93,7 +93,12 @@ public class Router extends SimEnt{
 			
 			System.out.println("Changed interface");
 			this.printRouterTable();
-			//send location changed to peer
+			//send ack to link
+			send(msg.getLink(),new InterfaceChangeACK(msg.getNewInterface()),_now);
+		}
+		
+		if(event instanceof InterfaceChangeUpdate) {
+			InterfaceChangeUpdate msg = (InterfaceChangeUpdate)event;
 			send(msg.getLink(),event,_now);
 		}
 	}
