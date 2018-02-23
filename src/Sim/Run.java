@@ -30,7 +30,7 @@ public class Run {
 		routeNode.connectInterface(1, link2, host2);
 		
 		//Change to interface 5 after 10 messages
-		host2.changeInterfaceAfterRecvMsgs(10, 5);
+		host2.changeInterfaceAfterRecvMsgs(10, 7);
 		
 		// Generate some traffic
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1

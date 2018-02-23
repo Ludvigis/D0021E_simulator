@@ -119,7 +119,7 @@ public class Node extends SimEnt {
 		
 		if (ev instanceof InterfaceChangeACK ) {
 			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" received interface change ack");
-			send(_peer, new InterfaceChangeUpdate((Link)_peer,((InterfaceChangeACK) ev).getNewInterface()),0);
+			send(_peer, new InterfaceChangeUpdate(new NetworkAddr(_toNetwork,_toHost),((InterfaceChangeACK) ev).getNewInterface()),0);
 			
 			
 		}

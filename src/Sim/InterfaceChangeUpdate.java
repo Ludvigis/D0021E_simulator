@@ -1,11 +1,12 @@
 package Sim;
 
 public class InterfaceChangeUpdate implements Event{
-	private Link link;
-	private int newInterface;
 	
-	public InterfaceChangeUpdate(Link link, int newInterface) {
-		this.link = link;
+	private int newInterface;
+	private NetworkAddr _destination;
+	
+	public InterfaceChangeUpdate(NetworkAddr addr, int newInterface) {
+		this._destination = addr;
 		this.newInterface = newInterface;
 	}
 	
@@ -13,8 +14,9 @@ public class InterfaceChangeUpdate implements Event{
 		return this.newInterface;
 	}
 	
-	public Link getLink() {
-		return this.link;
+	public NetworkAddr destination()
+	{
+		return _destination; 
 	}
 
 	public void entering(SimEnt locale) {

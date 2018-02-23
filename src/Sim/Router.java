@@ -25,8 +25,7 @@ public class Router extends SimEnt{
 		}
 	}
 	
-	// This method connects links to the router and also informs the 
-	// router of the host connects to the other end of the link
+	// This method connects link and node to the specified interface 
 	
 	public void connectInterface(int interfaceNumber, SimEnt link, SimEnt node)
 	{
@@ -39,6 +38,7 @@ public class Router extends SimEnt{
 		
 		((Link) link).setConnector(this);
 	}
+	// Disconnect interface specified by networkaddress
 	
 	public int disconnectInterface(int networkaddress){
 		Link routerInterfaceLink = (Link) getInterface(networkaddress);
@@ -84,6 +84,8 @@ public class Router extends SimEnt{
 			send (sendNext, event, _now);
 	
 		}
+		
+		//router receives interface change msg and carries out the change and sends ACK msg to node.
 		if (event instanceof InterfaceChange) {
 			
 			this.printRouterTable();
@@ -97,9 +99,11 @@ public class Router extends SimEnt{
 			send(msg.getLink(),new InterfaceChangeACK(msg.getNewInterface()),_now);
 		}
 		
+		// Update message node to node communication just forward.
 		if(event instanceof InterfaceChangeUpdate) {
 			InterfaceChangeUpdate msg = (InterfaceChangeUpdate)event;
-			send(msg.getLink(),event,_now);
+			SimEnt sendNext = getInterface(msg.destination().networkId());
+			send(sendNext,event,_now);
 		}
 	}
 }
