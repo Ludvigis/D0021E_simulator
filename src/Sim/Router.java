@@ -7,19 +7,28 @@ public class Router extends SimEnt{
 	private RouteTableEntry [] _routingTable;
 	private int _interfaces;
 	private int _now=0;
+	private HomeAgent ha;
+	private int networkID;
 
 	// When created, number of interfaces are defined
 	
-	Router(int interfaces)
+	Router(int networkID,int interfaces)
 	{
+		this.ha = new HomeAgent();
 		_routingTable = new RouteTableEntry[interfaces];
 		_interfaces=interfaces;
+		this.networkID = networkID;
 	}
 	
 	public void printRouterTable() {
 		for(int i = 0; i <_routingTable.length; i++) {
 			if(_routingTable[i]!=null) {
-				System.out.println("*** Node: " +((Node)_routingTable[i].node()).getAddr().networkId() + "." + ((Node)_routingTable[i].node()).getAddr().nodeId() + " router interface:" + i);
+				if(_routingTable[i].node() instanceof Node){
+					System.out.println("*** Node: " +((Node)_routingTable[i].node()).getAddr().networkId() + "." + ((Node)_routingTable[i].node()).getAddr().nodeId() + " router interface:" + i);
+				}else if(_routingTable[i].node() instanceof Router){
+					System.out.println("*** Router: " +((Router)_routingTable[i].node()).getNetworkID()  + " router interface:" + i);
+				}
+				
 			}
 			
 		}
@@ -60,15 +69,30 @@ public class Router extends SimEnt{
 	private SimEnt getInterface(int networkAddress)
 	{
 		SimEnt routerInterface=null;
-		for(int i=0; i<_interfaces; i++)
+		for(int i=0; i<_interfaces; i++){
 			if (_routingTable[i] != null)
-			{
-				if (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress)
-				{
-					routerInterface = _routingTable[i].link();
+			{	
+				
+				if(_routingTable[i].node() instanceof Node){
+					if (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress)
+					{
+						return _routingTable[i].link();
+					}
 				}
+				else if(_routingTable[i].node() instanceof Router){
+					if (((Router) _routingTable[i].node()).getNetworkID() == networkAddress)
+					{
+						return _routingTable[i].link();
+					}
+				}
+
 			}
+		}
 		return routerInterface;
+	}
+	
+	private int getNetworkID(){
+		return this.networkID;
 	}
 	
 	
@@ -78,32 +102,64 @@ public class Router extends SimEnt{
 	{
 		if (event instanceof Message)
 		{
-			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
-			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
-			System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId());		
-			send (sendNext, event, _now);
-	
+			handleMessage((Message)event);
 		}
-		
 		//router receives interface change msg and carries out the change and sends ACK msg to node.
 		if (event instanceof InterfaceChange) {
-			
-			this.printRouterTable();
-			InterfaceChange msg = (InterfaceChange)event;
-			disconnectInterface(msg.getNetworkId());
-			connectInterface(msg.getNewInterface(),msg.getLink(),msg.getNode());
-			
-			System.out.println("Changed interface");
-			this.printRouterTable();
-			//send ack to link
-			send(msg.getLink(),new InterfaceChangeACK(msg.getNewInterface()),_now);
+				handleInterfaceChange((InterfaceChange)event);
 		}
 		
 		// Update message node to node communication just forward.
 		if(event instanceof InterfaceChangeUpdate) {
-			InterfaceChangeUpdate msg = (InterfaceChangeUpdate)event;
-			SimEnt sendNext = getInterface(msg.destination().networkId());
-			send(sendNext,event,_now);
+			handleInterfaceChangeUpdate((InterfaceChangeUpdate)event);
+		}
+		if(event instanceof BindingUpdate){
+			handleBindingUpdate((BindingUpdate)event);
+		}
+		if(event instanceof BindingACK){
+			handleBindingACK((BindingACK)event);
 		}
 	}
+	
+	private void handleMessage(Message msg){
+		SimEnt sendNext;
+		//if homeagent has an entry for the destination address
+		if(ha.inMapTable(msg.destination())){
+			NetworkAddr COA = ha.getCOA(msg.destination());
+			sendNext = getInterface(COA.networkId());
+			System.out.println("Home Agent handles packet with seq: "+ msg.seq()+" from node: "+msg.source().networkId()+"." + msg.source().nodeId());
+			System.out.println("Home Agent tunnels to: " + COA.networkId()+"." + COA.nodeId());	
+		}else{
+			sendNext = getInterface(msg.destination().networkId());
+			System.out.println("Router on network: " + getNetworkID() + " handles packet with seq: " + msg.seq()+" from node: "+msg.source().networkId()+"." + msg.source().nodeId() );
+			System.out.println("Router on network: " + getNetworkID() + " sends to node: " + msg.destination().networkId()+"." + msg.destination().nodeId());	
+		}
+		send (sendNext, msg, _now);	
+	}
+	
+	private void handleInterfaceChange(InterfaceChange msg){
+		this.printRouterTable();
+		
+		disconnectInterface(msg.getNetworkId());
+		connectInterface(msg.getNewInterface(),msg.getLink(),msg.getNode());
+		
+		System.out.println("Changed interface");
+		this.printRouterTable();
+		//send ack to link
+		send(msg.getLink(),new InterfaceChangeACK(msg.getNewInterface()),_now);
+	}
+	
+	private void handleInterfaceChangeUpdate(InterfaceChangeUpdate msg){
+		SimEnt sendNext = getInterface(msg.destination().networkId());
+		send(sendNext,msg,_now);
+	}
+	
+	private void handleBindingUpdate(BindingUpdate msg){
+		ha.updateBinding(msg);
+	}
+	
+	private void handleBindingACK(BindingACK msg){
+		
+	}
+	
 }
