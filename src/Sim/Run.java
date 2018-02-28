@@ -43,11 +43,12 @@ public class Run {
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
 		host2.StartSending(1, 1, 9, 10); 
 		
-		
+		host1.moveMobileNodeAfterTime(r2, 100);
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
 	
 		t.start();
+		
 		try
 		{
 			t.join();

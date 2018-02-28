@@ -1,5 +1,7 @@
 package Sim;
 
+import org.omg.PortableServer.SERVANT_RETENTION_POLICY_ID;
+
 // This class implements a simple router
 
 public class Router extends SimEnt{
@@ -18,6 +20,9 @@ public class Router extends SimEnt{
 		_routingTable = new RouteTableEntry[interfaces];
 		_interfaces=interfaces;
 		this.networkID = networkID;
+		
+		//starts the "timer" on the router
+		send(this,new TimerEvent(),_now);		//TODO maybe break out to new method.
 	}
 	
 	public void printRouterTable() {
@@ -95,11 +100,36 @@ public class Router extends SimEnt{
 		return this.networkID;
 	}
 	
+	private void sendRouterAdvToAllConnInterfaces() {
+		System.out.println("Router "+networkID + "Sending Router advertisement");
+		for(int i=0; i<_interfaces; i++){
+			if (_routingTable[i] != null)
+			{	
+				send(_routingTable[i].link(),new RouterAdvertisement(),_now);
+
+			}
+		}
+	}
+	
 	
 	// When messages are received at the router this method is called
-	
+	private int sentAdvertisements = 0;
 	public void recv(SimEnt source, Event event)
 	{
+		if(event instanceof TimerEvent) {
+			if(sentAdvertisements < 20) {
+				++sentAdvertisements;
+				sendRouterAdvToAllConnInterfaces();
+				send(this,new TimerEvent(),10);		//TODO use variable for delay...
+			}
+			
+		}
+		
+		if(event instanceof RouterSolicitation) {
+			System.out.println("Router "+networkID + "Received solicitation");
+			send(source,new RouterAdvertisement(),_now);
+		}
+		
 		if (event instanceof Message)
 		{
 			handleMessage((Message)event);
@@ -155,6 +185,7 @@ public class Router extends SimEnt{
 	}
 	
 	private void handleBindingUpdate(BindingUpdate msg){
+		System.out.println("Router " + networkID + " got binding update");
 		ha.updateBinding(msg);
 	}
 	

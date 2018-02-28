@@ -9,7 +9,7 @@ public class HomeAgent{
 	
 	//map home address to care of address
 	public void updateBinding(BindingUpdate msg){
-		
+		System.out.println("Registed COA");
 		bindMap.put(msg.getHOA(), msg.getCOA());
 	}
 	
@@ -21,14 +21,5 @@ public class HomeAgent{
 	public NetworkAddr getCOA(NetworkAddr HOA){
 		return bindMap.get(HOA);
 	}
-	
-	public static void main (String [] args){
-		NetworkAddr a = new NetworkAddr(2, 1);
-		NetworkAddr b = new NetworkAddr(10, 10);
-		NetworkAddr c = new NetworkAddr(3, 3);
-		HomeAgent h = new HomeAgent();
-		h.bindMap.put(a, b);
-		h.bindMap.put(a, c);
-		System.out.println(h.bindMap.get(a));
-	}
+
 }

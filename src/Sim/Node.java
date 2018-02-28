@@ -77,6 +77,13 @@ public class Node extends SimEnt {
 	}
 	
 	
+	public void moveMobileNodeAfterTime(Router router,int time) {
+		
+		send(this,new MoveEvent(router),time);
+		
+	}
+	
+	
 	// This method is called upon that an event destined for this node triggers.
 	int numReceivedMsg;
 	
@@ -120,9 +127,20 @@ public class Node extends SimEnt {
 		if (ev instanceof InterfaceChangeACK ) {
 			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" received interface change ack");
 			send(_peer, new InterfaceChangeUpdate(new NetworkAddr(_toNetwork,_toHost),((InterfaceChangeACK) ev).getNewInterface()),0);
+		}
+		if(ev instanceof RouterAdvertisement) {
+			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" received router advertisement");
+		}
+		
+		if(ev instanceof MoveEvent) {
 			
+			MoveEvent msg = (MoveEvent)ev;
+			System.out.println("Move at time " + SimEngine.getTime());
+			
+			send(_peer,new BindingUpdate(this._id, this._id),0);
 			
 		}
+		
 	}
 	
 	public void changeInterfaceAfterRecvMsgs(int numMessages, int newInterface) {
