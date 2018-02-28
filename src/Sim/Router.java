@@ -96,12 +96,29 @@ public class Router extends SimEnt{
 		return routerInterface;
 	}
 	
+	//disconnects a node
+	//removes the link and sets interface on router to null;
+	public boolean disconnectNode(Node node){
+		for(int i=0; i<_interfaces; i++){
+			if(_routingTable[i].node() instanceof Node){
+				if((Node) _routingTable[i].node() == node){
+					Link link = (Link)_routingTable[i].link();
+					link.removeConnector(this);
+					_routingTable[i] = null;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	// returns routers network prefix.
 	private int getNetworkID(){
 		return this.networkID;
 	}
 	
 	private void sendRouterAdvToAllConnInterfaces() {
-		System.out.println("Router "+networkID + "Sending Router advertisement");
+		System.out.println("Router "+networkID + " Sending Router advertisement");
 		for(int i=0; i<_interfaces; i++){
 			if (_routingTable[i] != null)
 			{	
@@ -149,6 +166,17 @@ public class Router extends SimEnt{
 		if(event instanceof BindingACK){
 			handleBindingACK((BindingACK)event);
 		}
+		if(event instanceof DisconnectEvent){
+			handleDisconnectEvent((DisconnectEvent)event);
+		}
+	}
+	
+	private void handleDisconnectEvent(DisconnectEvent e){
+		if(disconnectNode(e.getNode())){
+			System.out.println("Disconnect");
+		}else{
+			System.out.println("Disconnect failed no such Node connected");
+		}
 	}
 	
 	private void handleMessage(Message msg){
@@ -161,6 +189,10 @@ public class Router extends SimEnt{
 			System.out.println("Home Agent tunnels to: " + COA.networkId()+"." + COA.nodeId());	
 		}else{
 			sendNext = getInterface(msg.destination().networkId());
+			if(sendNext == null){
+				System.out.println("--- Router on network: " + getNetworkID() + " Drops packet with seq: " + msg.seq()+" from node: "+msg.source().networkId()+"." + msg.source().nodeId());
+				return;
+			}
 			System.out.println("Router on network: " + getNetworkID() + " handles packet with seq: " + msg.seq()+" from node: "+msg.source().networkId()+"." + msg.source().nodeId() );
 			System.out.println("Router on network: " + getNetworkID() + " sends to node: " + msg.destination().networkId()+"." + msg.destination().nodeId());	
 		}

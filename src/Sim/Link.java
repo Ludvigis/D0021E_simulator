@@ -34,6 +34,10 @@ public class Link extends SimEnt{
 	{
 		if (ev instanceof Message)
 		{
+			if(_connectorA == null || _connectorB == null){
+				System.out.println("--- Link not connected Packet with seq: " +((Message) ev).seq() +" dropped");
+				return;
+			}
 			System.out.println("Link recv msg, passes it through");
 			if (src == _connectorA)
 			{

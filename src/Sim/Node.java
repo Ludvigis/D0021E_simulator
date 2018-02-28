@@ -136,8 +136,8 @@ public class Node extends SimEnt {
 			
 			MoveEvent msg = (MoveEvent)ev;
 			System.out.println("Move at time " + SimEngine.getTime());
-			
-			send(_peer,new BindingUpdate(this._id, this._id),0);
+			send(_peer,new DisconnectEvent(this),0);
+			//send(_peer,new BindingUpdate(this._id, this._id),0);
 			
 		}
 		

@@ -14,8 +14,8 @@ public class Run {
 		
 		// Create two end hosts that will be
 		// communicating via the router
-		Node host1 = new Node(1,1, new Poisson(10));
-		Node host2 = new Node(2,1, new Normal(100,10));
+		Node host1 = new Node(1,1, new Normal(10,2));
+		Node host2 = new Node(2,1, new Normal(10,2));
 
 		//Connect links to hosts
 		host1.setPeer(link2);
@@ -35,13 +35,13 @@ public class Run {
 		r2.connectInterface(1, link3, host2);
 		r2.connectInterface(0, link1, r1);
 		//Change to interface 5 after 10 messages
-		host2.changeInterfaceAfterRecvMsgs(10, 7);
+		//host2.changeInterfaceAfterRecvMsgs(10, 7);
 		
 		// Generate some traffic
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
-		host1.StartSending(2, 1, 15, 1); 
+		host1.StartSending(2, 1, 20, 1); 
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
-		host2.StartSending(1, 1, 9, 10); 
+		host2.StartSending(1, 1, 20, 100); 
 		
 		host1.moveMobileNodeAfterTime(r2, 100);
 		// Start the simulation engine and of we go!
