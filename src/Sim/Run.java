@@ -14,9 +14,10 @@ public class Run {
 		
 		// Create two end hosts that will be
 		// communicating via the router
-		Node host1 = new Node(1,1, new Normal(10,2));
+		Node host1 = new Node(1,100, new Normal(10,2));
 		Node host2 = new Node(2,1, new Normal(10,2));
-
+		
+		
 		//Connect links to hosts
 		host1.setPeer(link2);
 		host2.setPeer(link3);
@@ -28,6 +29,10 @@ public class Run {
 		// Note. A switch is created in same way using the Switch class
 		Router r1 = new Router(1,10);
 		Router r2 = new Router(2,10);
+		
+		//setup HA for nodes
+		host1.setHA(r1);
+		host2.setHA(r2);
 		
 		
 		r1.connectInterface(0, link1, r2);
@@ -41,7 +46,7 @@ public class Run {
 		// host1 will send 3 messages with time interval 5 to network 2, node 1. Sequence starts with number 1
 		host1.StartSending(2, 1, 20, 1); 
 		// host2 will send 2 messages with time interval 10 to network 1, node 1. Sequence starts with number 10
-		host2.StartSending(1, 1, 20, 100); 
+		host2.StartSending(1, 100, 20, 100); 
 		
 		host1.moveMobileNodeAfterTime(r2, 100);
 		// Start the simulation engine and of we go!
@@ -60,7 +65,7 @@ public class Run {
 		
 		System.out.println("Packet loss: "+ LossyLink.packetloss);
 		
-		System.out.println("******************************");
+		System.out.println("****************STATS**************");
 		host2.printStatistics();
 		host1.printStatistics();
 

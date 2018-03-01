@@ -14,8 +14,15 @@ public class Node extends SimEnt {
 	private Double maxDelay = Double.NaN;
 	private Double minDelay = Double.NaN;
 	private double totalDelay;
+	private int numReceivedMsg;
 	private int interfaceChangeNumMsg;
 	private int newInterface;
+	private SimEnt HA;
+	private NetworkAddr HOA;
+
+	// boolean to represent if the address currently used is valid
+	// set to true when created and false when moved to new network.
+	private boolean _validNetwork;
 	
 	//Overloaded constructor with generator argument.
 	public Node (int network, int node, Generator generator)
@@ -24,14 +31,25 @@ public class Node extends SimEnt {
 		_id = new NetworkAddr(network, node);
 		this.generator = generator;
 		this.sink = new Sink();
+		this._validNetwork = true;
+		this.HOA = new NetworkAddr(network,node);
+		
 	}
-
 	
+	public void setHA(Router r){
+		this.HA = r;
+	}
+	
+
+
+	//Constructor with CBR
 	public Node (int network, int node,int rate)
 	{
 		super();
 		this.generator = new CBR(rate);
 		_id = new NetworkAddr(network, node);
+		this._validNetwork = true;
+		this.HOA = new NetworkAddr(network,node);
 	}	
 
 	
@@ -72,28 +90,33 @@ public class Node extends SimEnt {
 	
 //**********************************************************************************	
 	
+	// message a change of interface on router.
 	public void changeRouterInterface(int newInterface) {
 		send(_peer, new InterfaceChange(this,newInterface,(Link)_peer),0);
 	}
 	
-	
+	//set time for node to move to new network.
 	public void moveMobileNodeAfterTime(Router router,int time) {
 		
 		send(this,new MoveEvent(router),time);
 		
 	}
 	
+	// Register COA at home agent.
+	public void registerCOAatHA(){
+		
+		send(this.HA,new BindingUpdate(HOA,_id),0);
+	}
+	
 	
 	// This method is called upon that an event destined for this node triggers.
-	int numReceivedMsg;
 	
 	public void recv(SimEnt src, Event ev)
 	{
 		if (ev instanceof TimerEvent)
-		{			
+		{
 			if (_stopSendingAfter > _sentmsg)
 			{
-
 				double nextSend = generator.getNextSend();
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
@@ -130,16 +153,38 @@ public class Node extends SimEnt {
 		}
 		if(ev instanceof RouterAdvertisement) {
 			System.out.println("Node "+_id.networkId()+ "." + _id.nodeId() +" received router advertisement");
+			if(!_validNetwork){
+				
+				//change network id
+				NetworkAddr addr = new NetworkAddr(((RouterAdvertisement)ev).getPrefix(), _id.nodeId());
+				_id = addr;
+				_validNetwork = true;
+				System.out.println("Node moved to network id :" + addr.networkId());
+				Router r = ((RouterAdvertisement)ev).getRouter();
+				//connect to router router selects appropriate interface number
+				r.connectRandomInterface(_peer, this);
+				//set SimEnt to be connector
+				((Link)_peer).setConnector(r);
+				//register at HA
+				registerCOAatHA();
+				
+				
+			}
 		}
 		
+		//first step in moving to new network
 		if(ev instanceof MoveEvent) {
 			
 			MoveEvent msg = (MoveEvent)ev;
 			System.out.println("Move at time " + SimEngine.getTime());
-			send(_peer,new DisconnectEvent(this),0);
-			//send(_peer,new BindingUpdate(this._id, this._id),0);
-			
+			//send(_peer,new DisconnectEvent(this),0);
+			((Router)HA).handleDisconnectEvent(new DisconnectEvent(this));
+			this._validNetwork = false;
+			Router r = msg.getRouter();
+			r.connectRandomInterface(_peer,this);
+			((Link)_peer).setConnector(r);
 		}
+		
 		
 	}
 	

@@ -1,7 +1,5 @@
 package Sim;
 
-import org.omg.PortableServer.SERVANT_RETENTION_POLICY_ID;
-
 // This class implements a simple router
 
 public class Router extends SimEnt{
@@ -31,7 +29,7 @@ public class Router extends SimEnt{
 				if(_routingTable[i].node() instanceof Node){
 					System.out.println("*** Node: " +((Node)_routingTable[i].node()).getAddr().networkId() + "." + ((Node)_routingTable[i].node()).getAddr().nodeId() + " router interface:" + i);
 				}else if(_routingTable[i].node() instanceof Router){
-					System.out.println("*** Router: " +((Router)_routingTable[i].node()).getNetworkID()  + " router interface:" + i);
+					System.out.println("*** Router id: " +((Router)_routingTable[i].node()).getNetworkID()  + " on interface:" + i);
 				}
 				
 			}
@@ -113,7 +111,7 @@ public class Router extends SimEnt{
 	}
 	
 	// returns routers network prefix.
-	private int getNetworkID(){
+	public int getNetworkID(){
 		return this.networkID;
 	}
 	
@@ -122,7 +120,7 @@ public class Router extends SimEnt{
 		for(int i=0; i<_interfaces; i++){
 			if (_routingTable[i] != null)
 			{	
-				send(_routingTable[i].link(),new RouterAdvertisement(),_now);
+				send(_routingTable[i].link(),new RouterAdvertisement(this),_now);
 
 			}
 		}
@@ -144,7 +142,7 @@ public class Router extends SimEnt{
 		
 		if(event instanceof RouterSolicitation) {
 			System.out.println("Router "+networkID + "Received solicitation");
-			send(source,new RouterAdvertisement(),_now);
+			send(source,new RouterAdvertisement(this),_now);
 		}
 		
 		if (event instanceof Message)
@@ -171,9 +169,9 @@ public class Router extends SimEnt{
 		}
 	}
 	
-	private void handleDisconnectEvent(DisconnectEvent e){
+	public void handleDisconnectEvent(DisconnectEvent e){
 		if(disconnectNode(e.getNode())){
-			System.out.println("Disconnect");
+			System.out.println("Disconnect on router: "+ networkID);
 		}else{
 			System.out.println("Disconnect failed no such Node connected");
 		}
@@ -182,11 +180,12 @@ public class Router extends SimEnt{
 	private void handleMessage(Message msg){
 		SimEnt sendNext;
 		//if homeagent has an entry for the destination address
+		System.out.println("TEST: " + ha.inMapTable(msg.destination()));
 		if(ha.inMapTable(msg.destination())){
 			NetworkAddr COA = ha.getCOA(msg.destination());
 			sendNext = getInterface(COA.networkId());
 			System.out.println("Home Agent handles packet with seq: "+ msg.seq()+" from node: "+msg.source().networkId()+"." + msg.source().nodeId());
-			System.out.println("Home Agent tunnels to: " + COA.networkId()+"." + COA.nodeId());	
+			System.out.println("Home Agent forwards to: " + COA.networkId()+"." + COA.nodeId());	
 		}else{
 			sendNext = getInterface(msg.destination().networkId());
 			if(sendNext == null){
@@ -219,6 +218,16 @@ public class Router extends SimEnt{
 	private void handleBindingUpdate(BindingUpdate msg){
 		System.out.println("Router " + networkID + " got binding update");
 		ha.updateBinding(msg);
+	}
+	
+	public void connectRandomInterface(SimEnt link,SimEnt node){
+		for(int i=0; i<_interfaces; i++){
+			if (_routingTable[i] == null){	
+				_routingTable[i] = new RouteTableEntry(link,node);
+				System.out.println("Connection on interface nr: "+ i);
+				return;
+			}
+		}
 	}
 	
 	private void handleBindingACK(BindingACK msg){
