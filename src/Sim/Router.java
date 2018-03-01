@@ -180,9 +180,9 @@ public class Router extends SimEnt{
 	private void handleMessage(Message msg){
 		SimEnt sendNext;
 		//if homeagent has an entry for the destination address
-		System.out.println("TEST: " + ha.inMapTable(msg.destination()));
 		if(ha.inMapTable(msg.destination())){
 			NetworkAddr COA = ha.getCOA(msg.destination());
+			//change destination in msg.
 			sendNext = getInterface(COA.networkId());
 			System.out.println("Home Agent handles packet with seq: "+ msg.seq()+" from node: "+msg.source().networkId()+"." + msg.source().nodeId());
 			System.out.println("Home Agent forwards to: " + COA.networkId()+"." + COA.nodeId());	
