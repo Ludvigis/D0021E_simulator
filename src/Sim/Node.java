@@ -19,7 +19,7 @@ public class Node extends SimEnt {
 	private int newInterface;
 	private SimEnt HA;
 	private NetworkAddr HOA;
-
+	private int RSTime = 20;
 	// boolean to represent if the address currently used is valid
 	// set to true when created and false when moved to new network.
 	private boolean _validNetwork;
@@ -71,6 +71,12 @@ public class Node extends SimEnt {
 		return _id;
 	}
 	
+	//sets the time to wait for RA before sending RS
+	public void setRSTime(int t){
+		RSTime = t;
+	}
+	
+	
 //**********************************************************************************	
 	// Just implemented to generate some traffic for demo.
 	// In one of the labs you will create some traffic generators
@@ -115,8 +121,13 @@ public class Node extends SimEnt {
 	{
 		if (ev instanceof TimerEvent)
 		{
-			if (_stopSendingAfter > _sentmsg)
-			{
+			TimerEvent te = (TimerEvent)ev;
+			if(te.isRS()){
+				if(!_validNetwork){
+					send(_peer,new RouterSolicitation(),0);
+					return;
+				}
+			}else if(_stopSendingAfter > _sentmsg){
 				double nextSend = generator.getNextSend();
 				_sentmsg++;
 				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),_seq),0);
@@ -177,12 +188,12 @@ public class Node extends SimEnt {
 			
 			MoveEvent msg = (MoveEvent)ev;
 			System.out.println("Move at time " + SimEngine.getTime());
-			//send(_peer,new DisconnectEvent(this),0);
 			((Router)HA).handleDisconnectEvent(new DisconnectEvent(this));
 			this._validNetwork = false;
 			Router r = msg.getRouter();
 			r.connectRandomInterface(_peer,this);
 			((Link)_peer).setConnector(r);
+			send(this,new TimerEvent(true),RSTime);
 		}
 		
 		

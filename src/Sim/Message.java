@@ -34,6 +34,10 @@ public class Message implements Event{
 	{
 		return _seq; 
 	}
+	
+	public void setNewDestination(NetworkAddr addr){
+		this._destination = addr;
+	}
 
 	public void entering(SimEnt locale)
 	{

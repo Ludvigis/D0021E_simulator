@@ -9,6 +9,10 @@ public class Router extends SimEnt{
 	private int _now=0;
 	private HomeAgent ha;
 	private int networkID;
+	private int RATime = 40;
+	private int RALongTime = 100;
+
+	
 
 	// When created, number of interfaces are defined
 	
@@ -35,6 +39,11 @@ public class Router extends SimEnt{
 			}
 			
 		}
+	}
+	
+	public void setupRA(int how_long, int interval){
+		this.RALongTime = how_long;
+		this.RATime = interval;
 	}
 	
 	// This method connects link and node to the specified interface 
@@ -128,20 +137,19 @@ public class Router extends SimEnt{
 	
 	
 	// When messages are received at the router this method is called
-	private int sentAdvertisements = 0;
+
 	public void recv(SimEnt source, Event event)
 	{
 		if(event instanceof TimerEvent) {
-			if(sentAdvertisements < 20) {
-				++sentAdvertisements;
+			if(RALongTime > SimEngine.getTime()) { 
 				sendRouterAdvToAllConnInterfaces();
-				send(this,new TimerEvent(),10);		//TODO use variable for delay...
+				send(this,new TimerEvent(),RATime);		//TODO use variable for delay...
 			}
 			
 		}
 		
 		if(event instanceof RouterSolicitation) {
-			System.out.println("Router "+networkID + "Received solicitation");
+			System.out.println("Router "+networkID + " Received solicitation at time " + SimEngine.getTime() + " Sends RA" );
 			send(source,new RouterAdvertisement(this),_now);
 		}
 		
@@ -182,10 +190,11 @@ public class Router extends SimEnt{
 		//if homeagent has an entry for the destination address
 		if(ha.inMapTable(msg.destination())){
 			NetworkAddr COA = ha.getCOA(msg.destination());
-			//change destination in msg.
+			//change destination in msg.'
+			msg.setNewDestination(COA);
 			sendNext = getInterface(COA.networkId());
 			System.out.println("Home Agent handles packet with seq: "+ msg.seq()+" from node: "+msg.source().networkId()+"." + msg.source().nodeId());
-			System.out.println("Home Agent forwards to: " + COA.networkId()+"." + COA.nodeId());	
+			System.out.println("Home Agent forwards to: " + COA.networkId()+"." + COA.nodeId());
 		}else{
 			sendNext = getInterface(msg.destination().networkId());
 			if(sendNext == null){
