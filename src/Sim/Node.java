@@ -187,12 +187,14 @@ public class Node extends SimEnt {
 		if(ev instanceof MoveEvent) {
 			
 			MoveEvent msg = (MoveEvent)ev;
-			System.out.println("Move at time " + SimEngine.getTime());
+			System.out.println("*** Move at time " + SimEngine.getTime()+ " ***");
 			((Router)HA).handleDisconnectEvent(new DisconnectEvent(this));
 			this._validNetwork = false;
 			Router r = msg.getRouter();
 			r.connectRandomInterface(_peer,this);
 			((Link)_peer).setConnector(r);
+			
+			//send timer event to trigger a RS on node.
 			send(this,new TimerEvent(true),RSTime);
 		}
 		
