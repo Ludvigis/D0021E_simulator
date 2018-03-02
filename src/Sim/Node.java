@@ -111,7 +111,7 @@ public class Node extends SimEnt {
 	// Register COA at home agent.
 	public void registerCOAatHA(){
 		
-		send(this.HA,new BindingUpdate(HOA,_id),0);
+		send(this.HA,new BindingUpdate(HOA,_id,this),0);
 	}
 	
 	
@@ -194,6 +194,10 @@ public class Node extends SimEnt {
 			r.connectRandomInterface(_peer,this);
 			((Link)_peer).setConnector(r);
 			send(this,new TimerEvent(true),RSTime);
+		}
+		
+		if(ev instanceof BindingACK){
+			System.out.println("Received BindingACK from HA");
 		}
 		
 		

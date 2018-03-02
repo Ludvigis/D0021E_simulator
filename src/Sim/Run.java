@@ -19,6 +19,8 @@ public class Run {
 		Node host1 = new Node(1,100, new Normal(10,2));
 		Node host2 = new Node(2,1, new Normal(10,2));
 		
+		//set time from which move to RS is sent
+		host1.setRSTime(60);
 		
 		//Connect links to hosts
 		host1.setPeer(link2);

@@ -225,8 +225,10 @@ public class Router extends SimEnt{
 	}
 	
 	private void handleBindingUpdate(BindingUpdate msg){
-		System.out.println("Router " + networkID + " got binding update");
+		System.out.println("HA on Router " + networkID + " got binding update sending ACK");
 		ha.updateBinding(msg);
+		//send binding ack as response.
+		send(msg.getEntity(),new BindingACK(msg.getEntity()),0);
 	}
 	
 	public void connectRandomInterface(SimEnt link,SimEnt node){
@@ -240,7 +242,7 @@ public class Router extends SimEnt{
 	}
 	
 	private void handleBindingACK(BindingACK msg){
-		
+		send(msg.getEntity(),msg,0);
 	}
 	
 }
